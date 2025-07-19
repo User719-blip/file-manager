@@ -24,6 +24,6 @@ class DownloadBloc extends Bloc<DownloadEvent, DownloadState> {
       emit(DownloadSuccess(files: files));
     } catch (e) {
       emit(DownloadFailure(message: e.toString()));
-    }
+    } 
   }
 }

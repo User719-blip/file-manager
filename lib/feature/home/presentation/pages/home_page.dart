@@ -1,3 +1,4 @@
+import 'package:file_manager/feature/categories/documents/presentation/pages/documents_pages.dart';
 import 'package:file_manager/feature/categories/download/presentation/pages/download_page.dart';
 import 'package:file_manager/feature/categories/images/presentation/pages/image_page.dart';
 import 'package:file_manager/feature/home/presentation/widgets/chip.dart';
@@ -31,6 +32,9 @@ class _HomePageState extends State<HomePage> {
                 }
                 if (label == 'Images') {
                   Navigator.push(context, MaterialPageRoute(builder: (_) => ImagePage()));
+                }
+                if (label =='Documents') {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => DocumentsPages()));
                 }
               },
             ),

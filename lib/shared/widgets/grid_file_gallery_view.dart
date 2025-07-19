@@ -50,7 +50,7 @@ class GridFileGalleryView extends StatelessWidget {
                   } else if (snapshot.hasData) {
                     return ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: Image.memory(snapshot.data!, fit: BoxFit.cover),
+                      child: Image.memory(snapshot.data!, fit: BoxFit.contain),
                     );
                   } else {
                     return const Center(child: Icon(Icons.broken_image));

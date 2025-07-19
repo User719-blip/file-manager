@@ -4,9 +4,11 @@ import 'package:file_manager/feature/categories/images/domain/entities/image_ent
 import 'package:photo_manager/photo_manager.dart';
 
 class FileActions {
-  static Future<void> deleteFiles(List<DownloadEntities> files) async {
+  static Future<void> deleteFiles<T>(List<T> files) async {
     for (var file in files) {
       try {
+        // ignore: unused_local_variable
+        final path = (file as dynamic).path;
         final f = File(file.path);
         if (await f.exists()) {
           await f.delete();
