@@ -38,6 +38,8 @@ dependencies:
   photo_manager: ^3.7.1
   open_file: ^3.5.10
   photo_manager_image_provider: ^2.2.0
+  path: ^1.9.1
+  device_apps: ^2.2.0
 
 dev_dependencies:
   flutter_test:

@@ -7,12 +7,12 @@ class GridChipSection extends StatelessWidget {
   final int chipsPerRow;
 
   const GridChipSection({
-    Key? key,
+    super.key,
     required this.title,
     required this.items,
     this.onTap,
     this.chipsPerRow = 2,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class GridChipSection extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(6.0),
                 child: Material(
-                  color: Colors.grey.shade200,
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
                   child: InkWell(
                     onTap: () => onTap?.call(item),

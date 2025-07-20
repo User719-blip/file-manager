@@ -15,14 +15,14 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
 
   Future<void> _onLoadDocumentsEvents(
     LoadDocumentsEvents event,
-    Emitter<DocumentsState> emit
+    Emitter<DocumentsState> emit,
   ) async {
     emit(DocumentsLoading());
     try {
-  final documents = await useCase();
-  emit(DocumentsSuccess(files: documents));
-} catch (e) {
-   emit(DocumentsFailure(message: e.toString()));
-  }
+      final documents = await useCase();
+      emit(DocumentsSuccess(files: documents));
+    } catch (e) {
+      emit(DocumentsFailure(message: e.toString()));
+    }
   }
 }

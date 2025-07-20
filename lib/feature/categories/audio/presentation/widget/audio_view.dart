@@ -1,39 +1,37 @@
 import 'package:file_manager/core/app_loader/loading_indicator.dart';
 import 'package:file_manager/core/utils/clipboard_manager.dart';
 import 'package:file_manager/core/utils/file_actions.dart';
-import 'package:file_manager/feature/categories/documents/domain/entities/document_entities.dart';
-import 'package:file_manager/feature/categories/documents/presentation/bloc/documents_bloc.dart';
+import 'package:file_manager/feature/categories/audio/domain/entity/audio_entity.dart';
+import 'package:file_manager/feature/categories/audio/presentation/bloc/audio_bloc.dart';
 import 'package:file_manager/shared/selection/cubit/selection_cubit.dart';
 import 'package:file_manager/shared/widgets/stack_file_list_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:open_file/open_file.dart';
 
-// ignore: must_be_immutable
-class DocumentsView extends StatefulWidget {
-
-  const DocumentsView({super.key});
+class AudioView extends StatefulWidget {
+  const AudioView({super.key});
 
   @override
-  State<DocumentsView> createState() => _DocumentsViewState();
+  State<AudioView> createState() => _AudioViewState();
 }
 
-class _DocumentsViewState extends State<DocumentsView> {
-  bool isSelectionMode = false ;
+class _AudioViewState extends State<AudioView> {
+  Set<int> selectedIndexes = {};
 
-  Set<int> selectedIndexes = {}; 
+  bool isSelectionMode = false;
 
   void toggleSelection(int index) {
-      setState(() {
-        if (selectedIndexes.contains(index)) {
-          selectedIndexes.remove(index);
-          if (selectedIndexes.isEmpty) isSelectionMode = false;
-        } else {
-          selectedIndexes.add(index);
-          isSelectionMode = true;
-        }
-      });
-    }
+    setState(() {
+      if (selectedIndexes.contains(index)) {
+        selectedIndexes.remove(index);
+        if (selectedIndexes.isEmpty) isSelectionMode = false;
+      } else {
+        selectedIndexes.add(index);
+        isSelectionMode = true;
+      }
+    });
+  }
 
   void clearSelection() {
     setState(() {
@@ -45,7 +43,7 @@ class _DocumentsViewState extends State<DocumentsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:  isSelectionMode
+      appBar: isSelectionMode
           ? AppBar(
               title: Text('${selectedIndexes.length} selected'),
               leading: IconButton(
@@ -56,8 +54,8 @@ class _DocumentsViewState extends State<DocumentsView> {
                 IconButton(
                   icon: const Icon(Icons.delete),
                   onPressed: () async {
-                    final state = context.read<DocumentsBloc>().state;
-                    if (state is DocumentsSuccess) {
+                    final state = context.read<AudioBloc>().state;
+                    if (state is AudioSuccess) {
                       await FileActions.deleteFiles(
                         selectedIndexes
                             .map((index) => state.files[index])
@@ -65,22 +63,22 @@ class _DocumentsViewState extends State<DocumentsView> {
                       );
                       // ignore: use_build_context_synchronously
                       context
-                          .read<SelectionCubit<DocumentsEntity>>()
+                          .read<SelectionCubit<AudioEntity>>()
                           .clearSelection();
                       // ignore: use_build_context_synchronously
-                      context.read<DocumentsBloc>().add(LoadDocumentsEvents());
+                      context.read<AudioBloc>().add(LoadAudioEvent());
                     }
                   },
                 ),
                 IconButton(
                   icon: const Icon(Icons.content_copy),
                   onPressed: () {
-                    final state = context.read<DocumentsBloc>().state;
-                    if (state is DocumentsSuccess) {
+                    final state = context.read<AudioBloc>().state;
+                    if (state is AudioSuccess) {
                       final files = selectedIndexes
                           .map((index) => state.files[index])
                           .toList();
-                      ClipboardManager<DocumentsEntity>().copy(files);
+                      ClipboardManager<AudioEntity>().copy(files);
                       clearSelection();
                     }
                   },
@@ -88,12 +86,12 @@ class _DocumentsViewState extends State<DocumentsView> {
                 IconButton(
                   icon: const Icon(Icons.content_cut),
                   onPressed: () {
-                    final state = context.read<DocumentsBloc>().state;
-                    if (state is DocumentsSuccess) {
+                    final state = context.read<AudioBloc>().state;
+                    if (state is AudioSuccess) {
                       final files = selectedIndexes
                           .map((index) => state.files[index])
                           .toList();
-                      ClipboardManager<DocumentsEntity>().cut(files);
+                      ClipboardManager<AudioEntity>().cut(files);
                       clearSelection();
                     }
                   },
@@ -102,27 +100,28 @@ class _DocumentsViewState extends State<DocumentsView> {
                   icon: const Icon(Icons.paste),
                   onPressed: () async {
                     final targetDir =
-                        '/storage/emulated/0/Documents'; // or use file.path of current dir
-                    await ClipboardManager<DocumentsEntity>().paste(
+                        '/storage/emulated/0/Audio'; // or use file.path of current dir
+                    await ClipboardManager<AudioEntity>().paste(
                       targetDir,
                       getPath: (e) async => e.path,
                     );
                     // ignore: use_build_context_synchronously
-                    context.read<DocumentsBloc>().add(LoadDocumentsEvents());
+                    context.read<AudioBloc>().add(LoadAudioEvent());
                   },
                 ),
+                
               ],
             )
-          :AppBar(title: const Text('Documents')),
-      body: BlocBuilder<DocumentsBloc, DocumentsState>(
+          : AppBar(title: const Text('Audio')),
+      body: BlocBuilder<AudioBloc, AudioState>(
         builder: (context, state) {
-          if (state is DocumentsLoading) {
-            return LoadingIndicator();
+          if (state is AudioLoading) {
+            return const LoadingIndicator();
           }
-          if (state is DocumentsSuccess) {
+          if (state is AudioSuccess) {
             return StackFileListView(
-              fileName: state.files.map((e) => e.name).toList(),
-              selectedIndexes:selectedIndexes,
+              fileName: state.files.map((e) => e.title).toList(),
+              selectedIndexes: selectedIndexes,
               isSelectionMode: isSelectionMode,
               onTap: (index) {
                 if (isSelectionMode) {
@@ -132,13 +131,13 @@ class _DocumentsViewState extends State<DocumentsView> {
                   OpenFile.open(file.path);
                 }
               },
-              onLongPress: (index)  => toggleSelection(index),
+              onLongPress: (index) => toggleSelection(index),
             );
           }
-          if (state is DocumentsFailure) {
+          if (state is AudioFailure) {
             return Center(child: Text('Error: ${state.message}'));
           }
-          return const Center(child: Text('No documents found.'));
+          return const Center(child: Text('No Audio found.'));
         },
       ),
     );

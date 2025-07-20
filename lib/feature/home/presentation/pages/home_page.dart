@@ -1,3 +1,5 @@
+import 'package:file_manager/feature/categories/app/presentation/page/app_page.dart';
+import 'package:file_manager/feature/categories/audio/presentation/page/audio_page.dart';
 import 'package:file_manager/feature/categories/documents/presentation/pages/documents_pages.dart';
 import 'package:file_manager/feature/categories/download/presentation/pages/download_page.dart';
 import 'package:file_manager/feature/categories/images/presentation/pages/image_page.dart';
@@ -27,6 +29,12 @@ class _HomePageState extends State<HomePage> {
               title: 'Categories',
               items: ['Documents', 'Images', 'Videos' , 'Audio' , 'Apps' , 'Downloads'],
               onTap: (label) {
+                if (label == 'Audio'){
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => AudioPage()));
+                }
+                if (label == 'Apps'){
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => AppPage()));
+                }
                 if (label == 'Downloads') {
                   Navigator.push(context, MaterialPageRoute(builder: (_) => DownloadsPage()));
                 }

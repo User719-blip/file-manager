@@ -5,7 +5,7 @@ class AppTheme {
     primaryColor: Colors.blue,
     appBarTheme: AppBarTheme(
       backgroundColor: Colors.blue,
-      titleTextStyle: TextStyle(color: Colors.white, fontSize: 20),
+      titleTextStyle: TextStyle(color: Colors.black12, fontSize: 20),
     ),
     scaffoldBackgroundColor: Colors.grey[200],
     textTheme: TextTheme(
