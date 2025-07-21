@@ -10,25 +10,24 @@ workflows:
         script: |
           flutter pub get
 
-    post-pub-get:
       - name: Patch device_apps plugin for Kotlin DSL & AGP 8+
         script: |
           echo "🔧 Patching device_apps plugin..."
 
           PLUGIN_PATH="$FLUTTER_ROOT/.pub-cache/hosted/pub.dev/device_apps-2.2.0"
-    
           GRADLE_KTS_FILE="$PLUGIN_PATH/android/build.gradle.kts"
           GRADLE_FILE="$PLUGIN_PATH/android/build.gradle"
           MANIFEST_FILE="$PLUGIN_PATH/android/src/main/AndroidManifest.xml"
 
-          # Patch Gradle file (Groovy or Kotlin)
+          # Patch Gradle file (Kotlin or Groovy)
           if [ -f "$GRADLE_KTS_FILE" ]; then
             echo "✅ Found Kotlin DSL build.gradle.kts, appending namespace..."
-            echo '\nnamespace = "fr.g123k.deviceapps"' >> "$GRADLE_KTS_FILE"
+            echo '' >> "$GRADLE_KTS_FILE"
+            echo 'namespace = "fr.g123k.deviceapps"' >> "$GRADLE_KTS_FILE"
           elif [ -f "$GRADLE_FILE" ]; then
             echo "✅ Found Groovy build.gradle, inserting namespace..."
-            sed -i '/android {/a \
-        namespace "fr.g123k.deviceapps"
+            sed -i '/android {/a\
+            \ \ \ \ namespace "fr.g123k.deviceapps"
             ' "$GRADLE_FILE"
           else
             echo "❌ Gradle file not found"
@@ -43,8 +42,6 @@ workflows:
             echo "⚠️ AndroidManifest.xml not found"
           fi
 
-
-    scripts:
       - name: Build APK
         script: |
           flutter build apk --release
