@@ -14,7 +14,7 @@ workflows:
         script: |
           echo "🔧 Patching device_apps plugin..."
 
-          PLUGIN_PATH="PLUGIN_PATH="$HOME/.pub-cache/hosted/pub.dev/device_apps-2.2.0"
+          PLUGIN_PATH="$HOME/.pub-cache/hosted/pub.dev/device_apps-2.2.0"
           GRADLE_KTS_FILE="$PLUGIN_PATH/android/build.gradle.kts"
           GRADLE_FILE="$PLUGIN_PATH/android/build.gradle"
           MANIFEST_FILE="$PLUGIN_PATH/android/src/main/AndroidManifest.xml"
