@@ -25,17 +25,14 @@ workflows:
 
           elif [ -f "$GRADLE_FILE" ]; then
             echo "✅ Found Groovy build.gradle, inserting namespace..."
-
-            # NOTE: No indentation after a\ and must escape newline for macOS `sed`
             sed -i '' '/android {/a\
-namespace "fr.g123k.deviceapps"
-' "$GRADLE_FILE"
+            namespace "fr.g123k.deviceapps"
+            ' "$GRADLE_FILE"
           else
             echo "❌ Gradle file not found"
             exit 1
           fi
 
-          # Patch AndroidManifest.xml (remove deprecated package attribute)
           if [ -f "$MANIFEST_FILE" ]; then
             echo "✅ Found AndroidManifest.xml, removing deprecated package attribute..."
             sed -i '' '/package="fr.g123k.deviceapps"/d' "$MANIFEST_FILE"
