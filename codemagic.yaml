@@ -4,24 +4,50 @@ workflows:
     max_build_duration: 30
     environment:
       flutter: stable
+
     scripts:
       - name: Install dependencies
         script: |
           flutter pub get
-      - name: Patch device_apps plugin
+
+    post-pub-get:
+      - name: Patch device_apps plugin for Kotlin DSL & AGP 8+
         script: |
-          echo "Patching device_apps plugin to include namespace..."
-          GRADLE_FILE="$HOME/.pub-cache/hosted/pub.dev/device_apps-2.2.0/android/build.gradle"
-          if [ -f "$GRADLE_FILE" ]; then
-            sed -i '' '/android {/a\
-                namespace "com.deviceapps"
+          echo "🔧 Patching device_apps plugin..."
+
+          PLUGIN_PATH="$FLUTTER_ROOT/.pub-cache/hosted/pub.dev/device_apps-2.2.0"
+    
+          GRADLE_KTS_FILE="$PLUGIN_PATH/android/build.gradle.kts"
+          GRADLE_FILE="$PLUGIN_PATH/android/build.gradle"
+          MANIFEST_FILE="$PLUGIN_PATH/android/src/main/AndroidManifest.xml"
+
+          # Patch Gradle file (Groovy or Kotlin)
+          if [ -f "$GRADLE_KTS_FILE" ]; then
+            echo "✅ Found Kotlin DSL build.gradle.kts, appending namespace..."
+            echo '\nnamespace = "fr.g123k.deviceapps"' >> "$GRADLE_KTS_FILE"
+          elif [ -f "$GRADLE_FILE" ]; then
+            echo "✅ Found Groovy build.gradle, inserting namespace..."
+            sed -i '/android {/a \
+        namespace "fr.g123k.deviceapps"
             ' "$GRADLE_FILE"
           else
-            echo "Gradle file not found: $GRADLE_FILE"
+            echo "❌ Gradle file not found"
             exit 1
           fi
+
+          # Patch AndroidManifest.xml
+          if [ -f "$MANIFEST_FILE" ]; then
+            echo "✅ Found AndroidManifest.xml, removing deprecated package attribute..."
+            sed -i '/package="fr.g123k.deviceapps"/d' "$MANIFEST_FILE"
+          else
+            echo "⚠️ AndroidManifest.xml not found"
+          fi
+
+
+    scripts:
       - name: Build APK
         script: |
           flutter build apk --release
+
     artifacts:
       - build/app/outputs/flutter-apk/app-release.apk
